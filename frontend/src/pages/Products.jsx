@@ -71,6 +71,10 @@ export default function Products() {
     setSelectedSubCategory('');
   };
 
+  const handleSubCategoryChange = (e) => {
+    setSelectedSubCategory(e.target.value);
+  };
+
   const filteredProducts = products.sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
@@ -146,7 +150,7 @@ export default function Products() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
                     <select
                       value={selectedSubCategory}
-                      onChange={(e) => setSelectedSubCategory(e.target.value)}
+                      onChange={handleSubCategoryChange}
                       className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
                       <option value="">All Subcategories</option>
@@ -179,6 +183,11 @@ export default function Products() {
             {loading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900">Error</h3>
+                <p className="mt-2 text-sm text-gray-500">{error}</p>
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="text-center py-12">
