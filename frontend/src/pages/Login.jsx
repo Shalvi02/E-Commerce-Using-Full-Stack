@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { authAPI } from '../api';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 
@@ -10,36 +10,22 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5002/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      login(data.user);
-      localStorage.setItem('token', data.token);
+      const response = await authAPI.login({ email, password });
+      localStorage.setItem('token', response.data.token);
       toast.success('Login successful!');
       navigate('/');
-    } catch (err) {
-      setError(err.message || 'Invalid email or password');
-      toast.error(err.message || 'Login failed');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(error.response?.data?.message || 'Failed to login. Please try again.');
+      toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }

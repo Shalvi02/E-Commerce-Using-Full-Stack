@@ -1,0 +1,1 @@
+export const API_URL = 'https://shalvi-shop-backend.onrender.com'; 

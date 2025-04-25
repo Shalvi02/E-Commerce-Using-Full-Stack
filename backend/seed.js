@@ -16,6 +16,7 @@ const categories = [
         name: 'Sofas',
         slug: 'sofas',
         description: 'Comfortable seating for your living room',
+        image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
       },
       {
