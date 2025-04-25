@@ -26,13 +26,24 @@ app.use((err, req, res, next) => {
 });
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce', {
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+    console.error('MONGODB_URI is not defined in environment variables');
+    process.exit(1);
+}
+
+mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
 })
-.then(() => console.log('Connected to MongoDB'))
+.then(() => {
+    console.log('Successfully connected to MongoDB Atlas');
+})
 .catch((err) => {
     console.error('MongoDB connection error:', err);
+    console.error('Please check your MONGODB_URI in the environment variables');
     process.exit(1);
 });
 
@@ -40,6 +51,20 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Welcome to Shalvi Shop API',
+    status: 'running',
+    endpoints: {
+      auth: '/api/auth',
+      categories: '/api/categories',
+      products: '/api/products',
+      health: '/health'
+    }
+  });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
