@@ -3,6 +3,10 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 
+const API_URL = 'https://shalvi-shop-backend.onrender.com';
+
+console.log('API URL:', API_URL); 
+
 export default function Products() {
   const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
@@ -13,6 +17,7 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -22,16 +27,18 @@ export default function Products() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5002/api/products`, {
-        params: {
-          category: selectedCategory,
-          subcategory: selectedSubCategory,
-          search: searchQuery
-        }
-      });
-      setProducts(response.data);
+      setError(null);
+      const response = await axios.get(`${API_URL}/api/products`);
+      console.log('Products response:', response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setProducts(response.data);
+      } else {
+        console.error('Invalid products data received:', response.data);
+        setError('Invalid products data received');
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
+      setError('Failed to fetch products');
     } finally {
       setLoading(false);
     }
@@ -39,10 +46,18 @@ export default function Products() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5002/api/categories');
-      setCategories(response.data);
+      setError(null);
+      const response = await axios.get(`${API_URL}/api/categories`);
+      console.log('Categories response:', response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setCategories(response.data);
+      } else {
+        console.error('Invalid categories data received:', response.data);
+        setError('Invalid categories data received');
+      }
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setError('Failed to fetch categories');
     }
   };
 

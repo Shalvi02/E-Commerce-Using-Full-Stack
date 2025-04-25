@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
-const API_URL = 'http://localhost:5002';
+const API_URL = 'https://shalvi-shop-backend.onrender.com';
 
 export default function Categories() {
   const { id } = useParams();
@@ -24,16 +24,22 @@ export default function Categories() {
   const loadCategories = async () => {
     try {
       setIsLoading(true);
+      setErrorMessage(null);
       const response = await axios.get(`${API_URL}/api/categories`);
-      setCategoryList(response.data);
-      if (id) {
-        const category = response.data.find(cat => cat._id === id);
-        setSelectedCategory(category);
-        setActiveCategoryId(category._id);
+      console.log('Categories response:', response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setCategoryList(response.data);
+        if (id) {
+          const category = response.data.find(cat => cat._id === id);
+          setSelectedCategory(category);
+          setActiveCategoryId(category._id);
+        }
+      } else {
+        setErrorMessage('Invalid categories data received');
       }
     } catch (error) {
-      setErrorMessage('Failed to load categories');
       console.error('Error loading categories:', error);
+      setErrorMessage('Failed to load categories');
     } finally {
       setIsLoading(false);
     }
@@ -42,11 +48,17 @@ export default function Categories() {
   const loadSubcategories = async (categoryId) => {
     try {
       setIsLoading(true);
+      setErrorMessage(null);
       const response = await axios.get(`${API_URL}/api/categories/${categoryId}/subcategories`);
-      setSubcategoryList(response.data);
+      console.log('Subcategories response:', response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setSubcategoryList(response.data);
+      } else {
+        setErrorMessage('Invalid subcategories data received');
+      }
     } catch (error) {
-      setErrorMessage('Failed to load subcategories');
       console.error('Error loading subcategories:', error);
+      setErrorMessage('Failed to load subcategories');
     } finally {
       setIsLoading(false);
     }
