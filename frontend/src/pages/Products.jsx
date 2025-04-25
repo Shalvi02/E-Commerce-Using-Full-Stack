@@ -3,15 +3,20 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 
-
 const API_URL = 'https://shalvi-shop-backend.onrender.com';
+
+// Main categories 
+const MAIN_CATEGORIES = [
+  { name: 'Living Room', slug: 'living-room' },
+  { name: 'Kitchen', slug: 'kitchen' },
+  { name: 'Bedroom', slug: 'bedroom' }
+];
 
 console.log('API URL:', API_URL); 
 
 export default function Products() {
   const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [selectedSubCategory, setSelectedSubCategory] = useState(searchParams.get('subcategory') || '');
   const [sortBy, setSortBy] = useState('newest');
@@ -22,7 +27,6 @@ export default function Products() {
 
   useEffect(() => {
     fetchProducts();
-    fetchCategories();
   }, [selectedCategory, selectedSubCategory, sortBy, searchQuery]);
 
   const fetchProducts = async () => {
@@ -45,34 +49,19 @@ export default function Products() {
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      setError(null);
-      const response = await axios.get(`${API_URL}/api/categories`);
-      console.log('Categories response:', response.data);
-      if (response.data && Array.isArray(response.data)) {
-        setCategories(response.data);
-      } else {
-        console.error('Invalid categories data received:', response.data);
-        setError('Invalid categories data received');
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      setError('Failed to fetch categories');
-    }
-  };
-
   const handleSearch = (e) => {
     e.preventDefault();
     fetchProducts();
   };
 
   const handleCategoryChange = (e) => {
+    console.log('Category changed to:', e.target.value);
     setSelectedCategory(e.target.value);
     setSelectedSubCategory('');
   };
 
   const handleSubCategoryChange = (e) => {
+    console.log('Subcategory changed to:', e.target.value);
     setSelectedSubCategory(e.target.value);
   };
 
@@ -88,8 +77,6 @@ export default function Products() {
         return 0;
     }
   });
-
-  const currentCategory = categories.find(cat => cat._id === selectedCategory);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -138,31 +125,13 @@ export default function Products() {
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   >
                     <option value="">All Categories</option>
-                    {categories.map((category) => (
-                      <option key={category._id} value={category._id}>
+                    {MAIN_CATEGORIES.map((category) => (
+                      <option key={category.slug} value={category.slug}>
                         {category.name}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                {currentCategory?.subcategories?.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
-                    <select
-                      value={selectedSubCategory}
-                      onChange={handleSubCategoryChange}
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    >
-                      <option value="">All Subcategories</option>
-                      {currentCategory.subcategories.map((subcat) => (
-                        <option key={subcat._id} value={subcat._id}>
-                          {subcat.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
