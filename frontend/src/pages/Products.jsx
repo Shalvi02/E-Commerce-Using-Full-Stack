@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 
+
 const API_URL = 'https://shalvi-shop-backend.onrender.com';
 
 console.log('API URL:', API_URL); 

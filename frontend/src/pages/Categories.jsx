@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
+// Use the deployed backend URL
 const API_URL = 'https://shalvi-shop-backend.onrender.com';
 
 export default function Categories() {
